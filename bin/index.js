@@ -157,7 +157,7 @@ if (main.command === 'help') {
     process.exit()
 }
 
-const host = opt.local ? 'ws://localhost:8802' : 'wss://cli.u.team'
+const host = opt.local ? 'ws://localhost:8802' : 'https://cli.u.team'
 
 const io = require("socket.io-client")
 const { ensureDir } = require('fs-extra')
