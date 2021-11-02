@@ -99,8 +99,9 @@ exports.createApplication = opt => {
       cb('\tNo option is specified')
     ),
 
-    run('pwd', (stdout, cb) => {
-      appPath = stdout.replace('\n', '')
+    run(process.platform === "win32" ? 'cd' : 'pwd', (stdout, cb) => {
+      appPath = stdout.replace('\n', '').replace('\r', '')
+
       module.paths.push(join(appPath, 'node_modules'))
       cb()
     }),
@@ -284,10 +285,9 @@ exports.removeApplication = opt => {
         series([
 
           //Get current path
-          run('pwd', (stdout, cb) => {
-            appPath = stdout.replace('\n', '')
+          run(process.platform === "win32" ? 'cd' : 'pwd', (stdout, cb) => {
+            appPath = stdout.replace('\n', '').replace('\r', '')
             module.paths.push(join(appPath, 'node_modules'))
-            console.log(0, appPath)
             cb()
           }),
 
