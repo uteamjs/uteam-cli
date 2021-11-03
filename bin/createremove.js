@@ -2,8 +2,8 @@ const { copy } = require("fs-extra")
 const { log, colors } = require('./util')
 const { exec } = require("child_process")
 const { series, eachSeries } = require("async")
-const { join, dirname } = require('path')
-const { readFileSync, writeFileSync, rmSync, stat } = require('fs')
+const { join, dirname, sep } = require('path')
+const { readFileSync, writeFileSync, rmSync, stat, statSync } = require('fs')
 
 const lg = msg => cb => {
   log('info', msg)
@@ -22,12 +22,19 @@ const iff = (cond, func) => cb => {
     cb()
 }
 
-const clone = (src, desc, cb) => {
+const clone = (src, desc, opt, cb) => {
   stat(desc, (err, st) => {
-    if (err === null)
+    const _isOverride = 'override' in opt
+    if (err === null && !_isOverride)
       cb(`Folder '${desc}' already exit`)
-    else
+    
+    else {
+      if(_isOverride)
+        log('warn', `Override existing folder ${desc}`)
+      
+      log('info', `Copy from ${src} to ${desc}`)
       copy(dirname(src), desc, cb)
+    }
   })
 }
 
@@ -46,26 +53,26 @@ const run = (cmd, func, isnotlog) => cb => {
 
   exec(cmd, (err, stdout) => {
     clearInterval(_progess)
-    
+
     if (err) {
-      if(cb)
+      if (cb)
         cb(err)
-      
+
       else {
         log('error', err)
-        if(func)
+        if (func)
           func(err)
       }
-    
+
     } else {
-      if(!isnotlog)
-        log('info', stdout) 
+      if (!isnotlog)
+        log('info', stdout)
 
       // Assume call back through function first
-      if(func)
+      if (func)
         func(stdout, cb)
-      
-      else if(cb)
+
+      else if (cb)
         cb()
 
       else {
@@ -104,11 +111,17 @@ exports.createApplication = opt => {
       }
     else
       try {
-        _temp = require.resolve(template)
-        cb()
+        if(statSync(template)) {
+            _temp = template + sep + '.'
+            cb()  
+        } 
+        
       } catch (e) {
         try {
-          _temp = require.resolve(`@uteamjs/template/${template}/package.json`)
+          if(!template.match(/package.json$/))
+            template += sep + 'package.json'
+          
+          _temp = require.resolve(template)
           cb()
         } catch (e2) {
           cb(e.message)
@@ -140,7 +153,9 @@ exports.createApplication = opt => {
 
         lg(`creating application ... ${appName}`),
 
-        cb => clone(_temp, appName, cb),
+        cb => clone(_temp, appName, opt, cb),
+
+        //cb=>cb('end'),
 
         cb => replaceName(appPath, appName, cb),
 
@@ -186,7 +201,6 @@ exports.createApplication = opt => {
       // Create packages
       callback => eachSeries(opt.packages, (t, cbEach) => {
         const _packagePath = join(appPath, 'packages', t)
-        _temp = null
 
         series([
 
@@ -195,7 +209,8 @@ exports.createApplication = opt => {
           lg(`creating packages. ... ${t}`),
 
           // Clone package
-          cb => clone(_temp, _packagePath, cb),
+          cb => clone(_temp, _packagePath, opt, cb),
+
 
           cb => replaceName(_packagePath, t, cb),
 
@@ -218,9 +233,11 @@ exports.createApplication = opt => {
               _path = join(appPath, 'packages/main/src/index.js')
               file = readFileSync(_path, 'utf-8')
 
+              
               if (file.indexOf(_route) < 0) {
                 let m = file.match(/\/\*\*(.*)insert(.*)import(.*)\*\//)
 
+              
                 if (m)
                   file = file.replace(m[0],
                     `import { ${_route} } from '../../${t}'\n` + m[0])
@@ -237,6 +254,7 @@ exports.createApplication = opt => {
             } catch (e) {
 
               // No app.yaml exist, ie server packages
+              log('warn', 'No app.yaml exist, assume server installation.')
               cb()
             }
           },
@@ -414,7 +432,7 @@ const errorAbort = tp => err => {
 
 exports.template = opt => setTimeout(() => {
   series([
-   
+
     iff('update' in opt, cb => {
       const _temp = opt.update || '@uteamjs/template'
 

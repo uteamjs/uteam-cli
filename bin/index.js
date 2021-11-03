@@ -69,8 +69,16 @@ const optionDefinitions = [
     {
         name: 'update',
         description: 'Upate template name',
+        alias: 'u',
+        type: String,
+    },
+    {
+        name: 'override',
+        description: 'Override existing directory',
+        alias: 'o',
         type: String,
     }
+    
 
 
 
@@ -197,7 +205,7 @@ const run = () => {
         case 'generate':
             // load yaml 
             try {
-                const yaml = readFile(opt.yaml || 'app.yaml')
+                const yaml = readFile(opt.yaml || 'app.yaml', true)
 
                 let filepage = opt.component,
                     fileindex = opt.indexfile,
