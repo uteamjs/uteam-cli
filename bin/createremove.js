@@ -39,17 +39,40 @@ const replaceName = (path, name, cb) => {
   cb()
 }
 
-const run = (cmd, func) => cb => {
+const run = (cmd, func, isnotlog) => cb => {
   const _progess = setInterval(() => {
     process.stdout.write('.')
   }, 500)
 
   exec(cmd, (err, stdout) => {
     clearInterval(_progess)
-    if (err)
-      cb(err)
-    else
-      func(stdout, cb)
+    
+    if (err) {
+      if(cb)
+        cb(err)
+      
+      else {
+        log('error', err)
+        if(func)
+          func(err)
+      }
+    
+    } else {
+      if(!isnotlog)
+        log('info', stdout) 
+
+      // Assume call back through function first
+      if(func)
+        func(stdout, cb)
+      
+      else if(cb)
+        cb()
+
+      else {
+        log('error', 'Exececuting ...' + cmd)
+        process.exit()
+      }
+    }
   })
 }
 
@@ -104,7 +127,7 @@ exports.createApplication = opt => {
 
       module.paths.push(join(appPath, 'node_modules'))
       cb()
-    }),
+    }, true),
 
     // Create Application
     iff(opt.application, cbApplication => {
@@ -127,10 +150,7 @@ exports.createApplication = opt => {
           cb()
         },
 
-        cb => run(`cd ${appPath} && npm i`, stdout => {
-          log('info', stdout)
-          cb()
-        })()
+        run(`cd ${appPath} && npm i`)
 
       ], cbApplication)
     }),
@@ -222,20 +242,13 @@ exports.createApplication = opt => {
           },
 
           // Generate Code
-          iff('generate' in opt,
-            cb => run(`cd ${join(appPath, 'packages', t)} && uteam generate`, stdout => {
-              log('info', stdout)
-              cb()
-            })()
-          )
+          iff('generate' in opt, run(`cd ${_packagePath} && uteam generate`))
+
         ], cbEach)
       }, callback),
 
       // npm install each package
-      cb => run(`cd ${join(appPath, 'packages/main')} && npm i`, stdout => {
-        log('info', stdout)
-        cb()
-      })()
+      cb => run(`cd ${join(appPath, 'packages/main')} && npm i`)(cb)
 
     ], cbPackage))
 
@@ -289,7 +302,7 @@ exports.removeApplication = opt => {
             appPath = stdout.replace('\n', '').replace('\r', '')
             module.paths.push(join(appPath, 'node_modules'))
             cb()
-          }),
+          }, true),
 
           // Load package.json
           step(cb => {
@@ -311,8 +324,6 @@ exports.removeApplication = opt => {
               cb()
             }
           },
-
-
 
           // For each package
           callback => eachSeries(opt.packages, (t, cbEach) => series([
@@ -380,10 +391,7 @@ exports.removeApplication = opt => {
           // npm i to remove package from node_modules
           lg(`Removing package from node_modules`),
 
-          cb => run(`cd ${join(appPath, 'packages/main')} && npm i`, (stdout) => {
-            log('info', stdout)
-            cb()
-          })()
+          cb => run(`cd ${join(appPath, 'packages/main')} && npm i`)(cb)
 
         ], err => {
           if (err)
@@ -406,15 +414,11 @@ const errorAbort = tp => err => {
 
 exports.template = opt => setTimeout(() => {
   series([
+   
     iff('update' in opt, cb => {
       const _temp = opt.update || '@uteamjs/template'
 
-      lg('info', 'npm update ' + _temp)
-
-      cb => run(`cd ${join(__dirname, '..')} && npm update ${_temp}`, stdout => {
-        log('info', stdout)
-        cb()
-      })()
+      run(`cd ${join(__dirname, '..')} && npm update ${_temp}`)(cb)
     })
   ], errorAbort('update'))
 }, 500)

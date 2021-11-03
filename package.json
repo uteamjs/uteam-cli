@@ -1,6 +1,6 @@
 {
   "name": "uteam",
-  "version": "0.5.7",
+  "version": "0.5.9",
   "description": "uteam CLI for application creation & code generation",
   "main": "bin/index.js",
   "scripts": {
