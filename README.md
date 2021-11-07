@@ -2,7 +2,7 @@ The [uteam CLI](https://u.team/document/cli) **Command Line Interface** is to he
 
 The application are base on the [@uteamjs/react](https://u.team/document/uteam-react/overview) frontend and [@uteamjs/node](https://u.team/document/uteam-node/overview) backend framework.
 
-[uteam CLI](https://u.team/document/cli) [generate](https://u.team/document/yaml/overview#uteam) standard JSX Code from [YAML](https://u.team/document/yaml/appyaml) definition.
+**uteam CLI** [generate](https://u.team/document/yaml/overview#uteam) standard JSX Code from [YAML](https://u.team/document/yaml/appyaml) definition.
 # Installation
 ```
 $ npm install -g uteam
@@ -105,8 +105,8 @@ Examples
 ```
 > ### Options
 >
-> The options are in form of --name <value>
-> or -n <value> where -n is the short form of --name
+> The options are in form of --name \<value>
+> or -n \<value> where -n is the short form of --name
 ## Create
 Create an application and/or packages with yaml generated.
 ```
@@ -114,19 +114,15 @@ $ uteam create < --application <name> | --packages <name 1> <name 2> … >
 [--generate]
 ```
 
-### --application 
-Create @uteamjs/react application with <name> Application is created from @uteamjs/template/react-application by default.
-### --packages [<name 1> …]
-Create packages under <application> with <name 1>, <name 2> ...
-### --generate
-Automatically run uteam generate after each package created.
+- **--application**: Create [@uteamjs/react](https://u.team/document/uteam-react/overview) application with \<name> Application is created from [@uteamjs/template](https://u.team/document/template)/**react-application** by default.
+- **--packages [<name 1> …]**: Create packages under \<application> with \<name 1>, \<name 2> ...
+- **--generate**: Automatically run **uteam generate** after each package created.
 ## Create with template
-Create either application or packages from template <name>
+Create either application or packages from template \<name>
 ```
 $ uteam create < --application <name> | --packages <name1> <name 2> > [--template <name>]
 ```
-### --template <name>
-The system will search from the user specified template first. If not found, it will use the @uteamjs/template/<name>
+- **--template \<name>**: The system will search from the user specified template first. If not found, it will use the [@uteamjs/template](https://u.team/document/template)/\<name>
 ## Remove
 Remove packages from applications.
 ```
@@ -134,18 +130,17 @@ $ uteam remove [--packages <name 1> <name 2> …]
 ```
 ONLY **--packages** option is allowed.  If you want to remove the application, just delete the application folder from the file system.
 ## Generate
-Generate complete React JSX packages from YAML.  The generation options are defined in the header section of the YAML file.  Run the command under each package folder.
+Generate complete **React JSX** packages from YAML.  The generation options are defined in the header section of the [YAML](https://u.team/document/yaml/appyaml) file.  Run the following command under each package folder.
 ```
 $ uteam generate [--yaml <file>]
 ```
-### --yaml <file>
-The YAML file used for code generation.
+- **--yaml \<file>**: The YAML file used for code generation.
 # Template
-Since @uteamjs/template is installed under the uteam global location, it is hard to navigate to the installed folder to run npm to update the template.  uteam provides the following command to update the template to the latest version.
+Since [@uteamjs/template](https://u.team/document/template) is installed under the uteam global location, it is hard to navigate to the installed folder to run npm to update the template.  **uteam** provides the following command to update the template to the latest version.
 ```
 $ uteam template --update
 ```
 # License
-[MIT](LICENSE) - For the create, update and delete of application and packages.
+[MIT](LICENSE) - **uteam** installed locally for the create, update and delete of application and packages.
 
 The Code Generation is a SasS provided by the **cli.u.team** platform.
