@@ -9,7 +9,7 @@ $ npm install -g uteam
 ```
 
 # Command
-[uteam CLI](https://u.team/document/cli) allows you to execute command with different options as parameters
+[uteam CLI](https://u.team/document/cli) allows you to execute **command** with different **options** as parameters
 ```
 $ uteam <command> [--options <params> …]
 ```
@@ -108,13 +108,13 @@ Examples
 > The options are in form of --name \<value>
 > or -n \<value> where -n is the short form of --name
 ## Create
-Create an application and/or packages with yaml generated.
+Create an application and/or packages with yaml code generation.
 ```
 $ uteam create < --application <name> | --packages <name 1> <name 2> … >
 [--generate]
 ```
 
-- **--application**: Create [@uteamjs/react](https://u.team/document/uteam-react/overview) application with \<name> Application is created from [@uteamjs/template](https://u.team/document/template)/**react-application** by default.
+- **--application**: Create [@uteamjs/react](https://u.team/document/uteam-react/overview) application with \<name>. Application is created from [@uteamjs/template](https://u.team/document/template)/**react-application** by default.
 - **--packages [<name 1> …]**: Create packages under \<application> with \<name 1>, \<name 2> ...
 - **--generate**: Automatically run **uteam generate** after each package created.
 ## Create with template
@@ -143,4 +143,4 @@ $ uteam template --update
 # License
 [MIT](LICENSE) - **uteam** installed locally for the create, update and delete of application and packages.
 
-The Code Generation is a SasS provided by the **cli.u.team** platform.
+SasS - The Code Generation is a provided by the **cli.u.team** platform.
