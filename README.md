@@ -21,42 +21,22 @@ The screen shows the following message:
 ```
 uteam - CLI
 
-
-
   Create and generate @uteamjs applications from YAML definition.               
-
   Copyright © 2021 U Team, Inc.                                                 
-
   Please visit https://u.team for details.                                      
-
-
 
 Usage
 
-
-
   $ uteam <command> [--<options> [string]] 
-
-
 
 <command>
 
-
-
   create     Create Application or Packages             
-
-  remove     Remove Packages                            
-
+  remove     Remove Packages                           
   generate   Generate React application from YAML       
-
   template   Template --update <name> to latest version 
 
-
-
 <options>
-
-
-
   -a, --application string   Application <name> to be generated.                                           
 
   -p, --packages string[]    Package <names...> added to application.                                      
@@ -65,15 +45,10 @@ Usage
 
   -t, --template string      Tempalate <path> used to create applications or packages.                      
 
-                             Default @uteamjs/template/react-application                                   
-
-                                                                                                           
+                             Default @uteamjs/template/react-application                                           
 
   -h, --help                 Display this usage guide.                                                     
-
-                                                                                                           
-
-                             <YAML Generation>                                                             
+                             <YAML Generation>                                                        
 
   -y, --yaml string          YAML definition file, default app.yaml.                                       
 
@@ -87,20 +62,12 @@ Usage
 
   --update string            Upate template name                                                           
 
-
-
 Examples
 
-
-
   1. Create application         $ uteam create --application my-cms          
-
   2. Create packages            $ cd ...your/application                     
-
                                 $ uteam create --package my-package package2 
-
   3. Generate application       $ uteam generate                             
-
   -  with specified yaml file   $ uteam generate --yaml myApp 
 ```
 > ### Options
