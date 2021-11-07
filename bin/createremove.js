@@ -27,11 +27,11 @@ const clone = (src, desc, opt, cb) => {
     const _isOverride = 'override' in opt
     if (err === null && !_isOverride)
       cb(`Folder '${desc}' already exit`)
-    
+
     else {
-      if(_isOverride)
+      if (_isOverride)
         log('warn', `Override existing folder ${desc}`)
-      
+
       log('info', `Copy from ${src} to ${desc}`)
       copy(dirname(src), desc, cb)
     }
@@ -111,20 +111,29 @@ exports.createApplication = opt => {
       }
     else
       try {
-        if(statSync(template)) {
-            _temp = template + sep + '.'
-            cb()  
-        } 
-        
+
+        _temp = require.resolve(`@uteamjs/template/${template}/package.json`)
+        cb()
+
       } catch (e) {
         try {
-          if(!template.match(/package.json$/))
-            template += sep + 'package.json'
-          
-          _temp = require.resolve(template)
-          cb()
+          if (statSync(template)) {
+            _temp = template + sep + '.'
+            cb()
+          }
+
         } catch (e2) {
-          cb(e.message)
+          try {
+            if (!template.match(/package.json$/))
+              template += sep + 'package.json'
+
+            _temp = require.resolve(template)
+            cb()
+
+          } catch (e3) {
+
+            cb(e.message)
+          }
         }
       }
   }
@@ -233,11 +242,11 @@ exports.createApplication = opt => {
               _path = join(appPath, 'packages/main/src/index.js')
               file = readFileSync(_path, 'utf-8')
 
-              
+
               if (file.indexOf(_route) < 0) {
                 let m = file.match(/\/\*\*(.*)insert(.*)import(.*)\*\//)
 
-              
+
                 if (m)
                   file = file.replace(m[0],
                     `import { ${_route} } from '../../${t}'\n` + m[0])
