@@ -174,7 +174,7 @@ exports.createApplication = opt => {
           cb()
         },
 
-        run(`cd ${appPath} && npm i`)
+        iff(!('noinstall' in opt), run(`cd ${appPath} && npm i`))
 
       ], cbApplication)
     }),
@@ -286,10 +286,6 @@ exports.createApplication = opt => {
     process.exit()
   })
 
-  try {
-  } catch (e) {
-    catchError(e)
-  }
 }
 
 const catchError = e => {
@@ -371,7 +367,7 @@ exports.removeApplication = opt => {
             }),
 
             // Remove import and route from index 
-            callback => iff(_index, cb => {
+            callback2 => iff(_index, cb => {
               log('info', `Removing import ... from index.js`)
               let m = regImport(t).exec(_index)
 
@@ -386,7 +382,7 @@ exports.removeApplication = opt => {
                 log('warn', `import statement not found!`)
 
               cb()
-            })(callback),
+            })(callback2),
 
             // Remove from package json
             cb => {

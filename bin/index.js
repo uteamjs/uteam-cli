@@ -47,6 +47,12 @@ const optionDefinitions = [
         type: String,
     },
     {
+        name: 'file',
+        description: 'Process specific file in YAML',
+        alias: 'f',
+        type: String,
+    },
+    {
         name: 'component',
         description: 'Component template',
         type: String,
@@ -77,10 +83,12 @@ const optionDefinitions = [
         description: 'Override existing directory',
         alias: 'o',
         type: String,
+    },
+    {
+        name: 'noinstall',
+        description: 'Skip npm installation',
+        type: String,
     }
-    
-
-
 
 ]
 
@@ -227,7 +235,7 @@ const run = () => {
                 const index = readFile(fileindex)
                 const init = readFile(fileinit)
 
-                socket.emit('generate', yaml, page, exports, init, index)
+                socket.emit('generate', yaml, page, exports, init, index, opt.file)
 
             } catch (err) {
                 console.log(err)
