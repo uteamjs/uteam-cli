@@ -120,7 +120,7 @@ const usage = commandLineUsage([
             { name: 'remove', summary: 'Remove Packages' },
             { name: 'generate', summary: 'Generate React application from YAML' },
             { name: 'template', summary: 'Template --update <name> to latest version' },
-            
+
         ]
     },
     {
@@ -207,6 +207,30 @@ const readFile = (path, isExit = false) => {
     }
 }
 
+let _template
+
+const { join } = require('path')
+
+const loadtemplate = (file, tp) => {
+    let f
+
+    if (file)
+        f = file
+
+    else {
+        f = join(_template, tp)
+        try {
+            f = require.resolve(f)
+        } catch {
+            // Skip 
+        }
+    }
+
+    if (f.lastIndexOf('.js') < 0) f += '.js'
+
+    return readFile(f, true)
+}
+
 const run = () => {
     log('cyan', 'connecting to ' + host)
     switch (main.command) {
@@ -220,20 +244,16 @@ const run = () => {
                     fileexport = opt.exportComponent,
                     fileinit = opt.initComponent
 
-                const m = yaml.match(/header:(.|\n)*template:\s*(('|")(\S*)('|")|(\S*))/i)
-                const template = m ? m[4] || m[2] : '@uteamjs/template/react-redux'
 
-                log('yellow', 'Using template: ' + template)
+                const m = yaml.match(/header:(.|\n)*?template:\s*(('|")(\S*)('|")|(\S*))/)
+                _template = m ? m[4] || m[2] : '@uteamjs/template/react-redux'
 
-                fileexport = fileexport || require.resolve(template + '/exports')
-                filepage = filepage || require.resolve(template + '/page')
-                fileindex = fileindex || require.resolve(template + '/module')
-                fileinit = fileinit || require.resolve(template + '/init')
+                log('yellow', 'Using template: ' + _template)
 
-                const exports = readFile(fileexport)
-                const page = readFile(filepage)
-                const index = readFile(fileindex)
-                const init = readFile(fileinit)
+                const exports = loadtemplate(fileexport, 'exports')
+                const page = loadtemplate(filepage, 'page')
+                const index = loadtemplate(fileindex, 'module')
+                const init = loadtemplate(fileinit, 'init')
 
                 socket.emit('generate', yaml, page, exports, init, index, opt.file)
 

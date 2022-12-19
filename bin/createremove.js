@@ -184,11 +184,12 @@ exports.createApplication = opt => {
     iff(opt.packages, cbPackage => series([
 
       step(cb => {
-        // Alter pa
-        const _path = join(appPath, 'packages/main/package.json')
+        // Alter packages.json
+        //const _path = join(appPath, 'packages/main/package.json')
+        const _path = join(appPath, 'package.json')
         const json = require(_path)
 
-        if (json.keywords.indexOf('Main') < 0)
+        if (json.keywords.indexOf('Application') < 0)
           return cb(`Invalid file ${_path}`)
 
         if (!appName)
@@ -199,7 +200,7 @@ exports.createApplication = opt => {
 
         // add package dependency
         opt.packages.forEach(t =>
-          json.dependencies[t] = `file:../${t}`
+          json.dependencies[t] = `file:packages/${t}`
         )
 
         writeFileSync(_path, JSON.stringify(json, null, 4))
@@ -275,7 +276,8 @@ exports.createApplication = opt => {
       }, callback),
 
       // npm install each package
-      cb => run(`cd ${join(appPath, 'packages/main')} && npm i`)(cb)
+      //cb => run(`cd ${join(appPath, 'packages/main')} && npm i`)(cb)
+      cb => run(`cd ${appPath} && npm i`)(cb)
 
     ], cbPackage))
 
@@ -329,7 +331,9 @@ exports.removeApplication = opt => {
 
           // Load package.json
           step(cb => {
-            _pathJson = join(appPath, 'packages/main/package.json')
+            //_pathJson = join(appPath, 'packages/main/package.json')
+            _pathJson = join(appPath, 'package.json')
+            
             log('info', `Loading ... ${_pathJson}`)
             _json = require(_pathJson)
             cb()
@@ -414,7 +418,8 @@ exports.removeApplication = opt => {
           // npm i to remove package from node_modules
           lg(`Removing package from node_modules`),
 
-          cb => run(`cd ${join(appPath, 'packages/main')} && npm i`)(cb)
+          //cb => run(`cd ${join(appPath, 'packages/main')} && npm i`)(cb)
+          cb => run(`cd ${appPath} && npm i`)(cb)
 
         ], err => {
           if (err)
