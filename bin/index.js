@@ -88,8 +88,20 @@ const optionDefinitions = [
         name: 'noinstall',
         description: 'Skip npm installation',
         type: String,
+    },
+    {
+        name: 'append',
+        description: 'append yaml file(s) to the main yaml',
+        alias: 'e',
+        multiple: true,
+        type: String,
+    },
+    {
+        name: 'directory',
+        description: 'yaml append file\'s directory default ./yaml',
+        alias: 'd',
+        type: String,
     }
-
 ]
 
 const internal = [
@@ -226,7 +238,7 @@ const loadtemplate = (file, tp) => {
         }
     }
 
-    if (f.lastIndexOf('.js') < 0) f += '.js'
+    if (f.lastIndexOf('.j' ) < 0) f += '.js' 
 
     return readFile(f, true)
 }
@@ -237,13 +249,23 @@ const run = () => {
         case 'generate':
             // load yaml 
             try {
-                const yaml = readFile(opt.yaml || 'app.yaml', true)
+                let yaml = readFile(opt.yaml || 'app.yaml', true)
+
+                const dir = opt.directory || 'yaml'
+
+                for (let f of opt.append) {
+                    if (f.lastIndexOf('.yaml' ) < 0) f += '.yaml'  
+                    
+                    if(f.indexOf(dir + '/') < 0)
+                        f = join(dir, f)
+                    
+                    yaml += '\n' + (readFile(f) || '')                  
+                }
 
                 let filepage = opt.component,
                     fileindex = opt.indexfile,
                     fileexport = opt.exportComponent,
                     fileinit = opt.initComponent
-
 
                 const m = yaml.match(/header:(.|\n)*?template:\s*(('|")(\S*)('|")|(\S*))/)
                 _template = m ? m[4] || m[2] : '@uteamjs/template/react-redux'
