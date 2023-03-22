@@ -80,7 +80,7 @@ const optionDefinitions = [
     },
     {
         name: 'override',
-        description: 'Override existing directory',
+        description: 'Override existing directory in "create" / js file in "generate"',
         alias: 'o',
         type: String,
     },
@@ -238,10 +238,12 @@ const loadtemplate = (file, tp) => {
         }
     }
 
-    if (f.lastIndexOf('.j' ) < 0) f += '.js' 
+    if (f.lastIndexOf('.j') < 0) f += '.js'
 
     return readFile(f, true)
 }
+
+const { parse } = require('yaml')
 
 const run = () => {
     log('cyan', 'connecting to ' + host)
@@ -253,22 +255,28 @@ const run = () => {
 
                 const dir = opt.directory || 'yaml'
 
-                for (let f of opt.append) {
-                    if (f.lastIndexOf('.yaml' ) < 0) f += '.yaml'  
-                    
-                    if(f.indexOf(dir + '/') < 0)
-                        f = join(dir, f)
-                    
-                    yaml += '\n' + (readFile(f) || '')                  
-                }
+                if (opt.append)
+                    for (let f of opt.append) {
+                        if (f.lastIndexOf('.yaml') < 0) f += '.yaml'
+
+                        if (f.indexOf(dir + '/') < 0)
+                            f = join(dir, f)
+
+                        yaml += '\n' + (readFile(f) || '')
+                    }
 
                 let filepage = opt.component,
                     fileindex = opt.indexfile,
                     fileexport = opt.exportComponent,
                     fileinit = opt.initComponent
 
-                const m = yaml.match(/header:(.|\n)*?template:\s*(('|")(\S*)('|")|(\S*))/)
-                _template = m ? m[4] || m[2] : '@uteamjs/template/react-redux'
+                // User yaml parser instead to prevent comment of same element
+                const json = parse(yaml)
+
+                //const m = yaml.match(/header:(.|\n)*?template:\s*(('|")(\S*)('|")|(\S*))/)
+                //_template = m ? m[4] || m[2] : '@uteamjs/template/react-redux'
+
+                _template = json.header.template
 
                 log('yellow', 'Using template: ' + _template)
 
@@ -346,7 +354,7 @@ socket.on('save', (file, obj, isInit) => {
         if (err) throw err
         try {
             //console.log(isInit, file, fs.existsSync(file))
-            if (isInit && fs.existsSync(file)) {
+            if (!('override' in opt) || isInit && fs.existsSync(file)) {
                 log('info', 'Skipping ... ' + file)
                 delete saving[file]
 
