@@ -354,7 +354,8 @@ socket.on('save', (file, obj, isInit) => {
         if (err) throw err
         try {
             //console.log(isInit, file, fs.existsSync(file))
-            if (!('override' in opt) || isInit && fs.existsSync(file)) {
+
+            if (!('override' in opt) && isInit && fs.existsSync(file)) {
                 log('info', 'Skipping ... ' + file)
                 delete saving[file]
 
