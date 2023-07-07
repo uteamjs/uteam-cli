@@ -360,10 +360,19 @@ socket.on('save', (file, obj, isInit) => {
                 delete saving[file]
 
             } else {
-                fs.writeFileSync(file, obj)
-                delete saving[file]
-                log('info', 'File created: ' + colors.brightGreen(file))
+                if (fs.readFileSync(file, 'utf-8').match(/\/\/ *\$modified/i)) {
+                    log('info', 'Skipping ... $modified ' + file)
+                    delete saving[file]
+
+                } else {
+
+                    fs.writeFileSync(file, obj)
+                    delete saving[file]
+                    log('info', 'File created: ' + colors.brightGreen(file))
+                }
             }
+
+
         } catch (err) {
             log('error', err.name + ': ' + err.message)
         }
