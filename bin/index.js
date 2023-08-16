@@ -360,7 +360,7 @@ socket.on('save', (file, obj, isInit) => {
                 delete saving[file]
 
             } else {
-                if (fs.readFileSync(file, 'utf-8').match(/\/\/ *\$modified/i)) {
+                if (fs.existsSync(file) && fs.readFileSync(file, 'utf-8').match(/\/\/ *\$modified/i)) {
                     log('info', 'Skipping ... $modified ' + file)
                     delete saving[file]
 
