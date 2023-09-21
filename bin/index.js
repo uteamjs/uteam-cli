@@ -276,12 +276,21 @@ const run = () => {
                 //const m = yaml.match(/header:(.|\n)*?template:\s*(('|")(\S*)('|")|(\S*))/)
                 //_template = m ? m[4] || m[2] : '@uteamjs/template/react-redux'
 
+                let pagejs = 'page'
+
+                if(opt.append && json[opt.append])
+                {
+                    for(const obj of json[opt.append])
+                        if(typeof obj === 'object' && obj.template)
+                            pagejs = obj.template
+                }
+
                 _template = json.header.template
 
                 log('yellow', 'Using template: ' + _template)
 
                 const exports = loadtemplate(fileexport, 'exports')
-                const page = loadtemplate(filepage, 'page')
+                const page = loadtemplate(filepage, pagejs)
                 const index = loadtemplate(fileindex, 'module')
                 const init = loadtemplate(fileinit, 'init')
 
